@@ -32,11 +32,11 @@ class StrandManager(object):
 
     def display(self):
         # figure out how big the leds should be
-        x_space = self.height / len(self.strands)
-        y_space = self.width / max([strand.length for strand in self.strands])
+        x_space = self.width / len(self.strands)
+        y_space = self.height / max([strand.length for strand in self.strands])
         for x,strand in enumerate(self.strands):
             for y,color in enumerate(strand.colors):
                 #print("Drawing:{} @ ({}, {})".format((color.red, color.green, color.blue), int(x*x_space), int(y*y_space)))
-                pygame.draw.circle(self.screen, (color.red, color.green, color.blue), (int(x*x_space)+50, int((y*y_space)/2)+50), int(y_space/4))
+                pygame.draw.circle(self.screen, (color.red, color.green, color.blue), (int(x*x_space)+50, int(((y*y_space)+y_space/2))), int(y_space/2))
 
 
