@@ -15,6 +15,7 @@ def main():
     p.subscribe("beats")
     for msg in p.listen():
         data = msg["data"]
+
         # three options -
         # 1. "Beat"
         # 2. "noteoctave:{A-F},{1-7}"

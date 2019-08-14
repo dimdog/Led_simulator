@@ -3,6 +3,7 @@ import time
 import random
 
 import strands
+import redis
 from patterns import RandomPattern
 
 pygame.init()
@@ -11,7 +12,6 @@ width = 800
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("LED SIMULATOR")
 
-rand = random.Random()
 s0 = strands.Strand(160)
 rp0 = RandomPattern(s0)
 s1 = strands.Strand(160)
@@ -30,13 +30,18 @@ sm.patterns.append(rp3)
 sm.patterns.append(rp4)
 
 done = False
+r = redis.StrictRedis(host="localhost", port=6379, password="", decode_responses=True)
+p = r.pubsub(ignore_subscribe_messages=True)
+p.subscribe("beats")
 
 while not done:
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                         done = True
+        msg = p.get_message()
+        data = msg["data"] if msg else None
         for pattern in sm.patterns:
-            pattern.msg(None)
+            pattern.msg(data)
         sm.display()
 
         pygame.display.flip()

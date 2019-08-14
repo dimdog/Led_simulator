@@ -15,7 +15,6 @@ class Pattern(object):
 
 class RandomPattern(Pattern):
 
-
     def msg(self, msg):
         red = self.rand.randint(0,255)
         green = self.rand.randint(0,255)
@@ -23,6 +22,14 @@ class RandomPattern(Pattern):
         self.strand.add_rgb(red, green, blue)
         return self.strand.colors
 
+class SimpleRandomPattern(Pattern):
 
+    def msg(self, msg):
+        if msg:
+            red = self.rand.randint(0,255)
+            green = self.rand.randint(0,255)
+            blue = self.rand.randint(0,255)
+            self.strand.add_rgb(red, green, blue)
+        return self.strand.colors
 
 
