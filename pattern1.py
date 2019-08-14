@@ -1,44 +1,28 @@
-import pygame
-import strands
 import time
 import random
 
-pygame.init()
-height = 600
-width = 800
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("LED SIMULATOR")
 
-rand = random.Random()
-s0 = strands.Strand(160)
-s1 = strands.Strand(160)
-s2 = strands.Strand(160)
-s3 = strands.Strand(160)
-s4 = strands.Strand(160)
-sm = strands.StrandManager(screen, height, width)
-sm.strands.append(s0)
-sm.strands.append(s1)
-sm.strands.append(s2)
-sm.strands.append(s3)
-sm.strands.append(s4)
+class Pattern(object):
 
-done = False
+    def __init__(self, strand):
+        self.strand = strand
+        self.rand = random.Random()
 
-def add_random_to_strand(strand):
-    red = rand.randint(0,255)
-    green = rand.randint(0,255)
-    blue = rand.randint(0,255)
-    strand.add_rgb(red, green, blue)
+    def msg(self, msg):
+        # take a message and return the strands colors
+        return self.strand.colors
 
 
-while not done:
-        for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                        done = True
-        for strand in sm.strands:
-            add_random_to_strand(strand)
-        sm.display()
+class RandomPattern(Pattern):
 
-        pygame.display.flip()
+
+    def msg(self, msg):
+        red = rand.randint(0,255)
+        green = rand.randint(0,255)
+        blue = rand.randint(0,255)
+        self.strand.add_rgb(red, green, blue)
+        return self.strand.colors
+
+
 
 
