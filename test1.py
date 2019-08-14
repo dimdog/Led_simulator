@@ -1,7 +1,9 @@
 import pygame
-import strands
 import time
 import random
+
+import strands
+from patterns import RandomPattern
 
 pygame.init()
 height = 600
@@ -11,32 +13,30 @@ pygame.display.set_caption("LED SIMULATOR")
 
 rand = random.Random()
 s0 = strands.Strand(160)
+rp0 = RandomPattern(s0)
 s1 = strands.Strand(160)
+rp1 = RandomPattern(s1)
 s2 = strands.Strand(160)
+rp2 = RandomPattern(s2)
 s3 = strands.Strand(160)
+rp3 = RandomPattern(s3)
 s4 = strands.Strand(160)
-sm = strands.StrandManager(screen, height, width)
-sm.strands.append(s0)
-sm.strands.append(s1)
-sm.strands.append(s2)
-sm.strands.append(s3)
-sm.strands.append(s4)
+rp4 = RandomPattern(s4)
+sm = strands.PatternManager(screen, height, width)
+sm.patterns.append(rp0)
+sm.patterns.append(rp1)
+sm.patterns.append(rp2)
+sm.patterns.append(rp3)
+sm.patterns.append(rp4)
 
 done = False
-
-def add_random_to_strand(strand):
-    red = rand.randint(0,255)
-    green = rand.randint(0,255)
-    blue = rand.randint(0,255)
-    strand.add_rgb(red, green, blue)
-
 
 while not done:
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                         done = True
-        for strand in sm.strands:
-            add_random_to_strand(strand)
+        for pattern in sm.patterns:
+            pattern.msg(None)
         sm.display()
 
         pygame.display.flip()
