@@ -25,7 +25,7 @@ class RandomPattern(Pattern):
 class SimpleRandomPattern(Pattern):
 
     def msg(self, msg):
-        if msg:
+        if msg == "Beat":
             red = self.rand.randint(0,255)
             green = self.rand.randint(0,255)
             blue = self.rand.randint(0,255)
