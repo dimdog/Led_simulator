@@ -23,7 +23,7 @@ pygame.display.set_caption("LED SIMULATOR")
 
 # make n strands of x length inputtable
 
-s0 = strands.Strand(160)
+s0 = strands.Strand(300)
 rp0 = RandomPattern(s0)
 s1 = strands.Strand(160)
 rp1 = RandomPattern(s1)
@@ -54,7 +54,7 @@ if not ser:
 #   I. 0 means individual leds
 #   II. 1 means color wipe
 # 3. Data for the protocal type
-#   Individual LEDS: TOTAL_LEDS (R G B) (Repeated)
+#   Individual LEDS: R G B (Repeated)
 #   Color Wipe R G B
 def individual_leds():
     for i, pattern in enumerate(sm.patterns):
@@ -62,17 +62,16 @@ def individual_leds():
         ser.write(struct.pack('>B',i))
         # Protocol # 2
         ser.write(struct.pack('>B', 0))
-        # Protocol # 3 part 1
-        ser.write(struct.pack('>B', len(pattern.strand.colors)))
         for color in pattern.strand.colors:
             if ser:
-                ser.write(struct.pack('>B', color[0]))
-                ser.write(struct.pack('>B', color[1]))
-                ser.write(struct.pack('>B', color[2]))
-                printed = False
+                ser.write(struct.pack('>B', min(254, color[0])))
+                ser.write(struct.pack('>B', min(254,color[1])))
+                ser.write(struct.pack('>B', min(254,color[2])))
+                #printed = False
                 #while ser.in_waiting or not printed:
                 #    printed = True
                 #    print(ser.readline())
+        ser.write(struct.pack('>B', 255))
 
 def wipe_all_strips():
     for i, pattern in enumerate(sm.patterns):
@@ -98,8 +97,7 @@ def color_wipe(strip_number, color):
 
 def init_serial():
     while not ser.in_waiting: # warm up the serial connection
-        randval = rand.randint(0,100)
-        data = ser.write(struct.pack('>B', randval))
+        data = ser.write(struct.pack('>B', 255))
         time.sleep(0.01)
     while ser.in_waiting: # clear the buffer
         ser.readline()
