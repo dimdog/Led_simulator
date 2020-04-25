@@ -24,7 +24,7 @@ class ArduinoLEDStrip(object):
     #   Individual LEDS: R G B (Repeated)
     #   Color Wipe R G B
     def individual_leds(self):
-        for i, pattern in enumerate(self.patterns): # was sm.patterns TODO
+        for i, pattern in enumerate(self.patterns):
             # Protocol # 1
             self.serial.write(struct.pack('>B',i))
             # Protocol # 2

@@ -30,6 +30,10 @@ class PatternManager(object):
         self.width = width
         self.patterns = []
 
+    def change_color_range(self, color_range_number):
+        for pattern in self.patterns:
+            pattern.change_color_range(color_range_number)
+
     def display(self):
         # figure out how big the leds should be
         x_space = self.width / len(self.patterns)
