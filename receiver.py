@@ -12,7 +12,11 @@ ser = None
 try:
     ser = serial.Serial('/dev/tty.usbmodem14201', baudrate=1000000)
 except:
-    ser = serial.Serial('/dev/tty.usbmodem14101', baudrate=1000000)
+    try:
+        ser = serial.Serial('/dev/tty.usbmodem14101', baudrate=1000000)
+    except:
+        print("no serial")
+
 
 rand = random.Random()
 pygame.init()
@@ -24,7 +28,7 @@ pygame.display.set_caption("LED SIMULATOR")
 # make n strands of x length inputtable
 
 s0 = strands.Strand(300)
-rp0 = RandomPattern(s0)
+rp0 = SimpleRandomPattern(s0)
 s1 = strands.Strand(160)
 rp1 = RandomPattern(s1)
 s2 = strands.Strand(160)
@@ -44,8 +48,6 @@ done = False
 r = redis.StrictRedis(host="localhost", port=6379, password="", decode_responses=True)
 p = r.pubsub(ignore_subscribe_messages=True)
 p.subscribe("beats")
-if not ser:
-    print ("NO SERIAL")
 
 
 # Protocol for wire.
@@ -57,6 +59,8 @@ if not ser:
 #   Individual LEDS: R G B (Repeated)
 #   Color Wipe R G B
 def individual_leds():
+    if not ser:
+        return None
     for i, pattern in enumerate(sm.patterns):
         # Protocol # 1
         ser.write(struct.pack('>B',i))
@@ -102,7 +106,9 @@ def init_serial():
     while ser.in_waiting: # clear the buffer
         ser.readline()
 
-init_serial()
+if ser:
+    init_serial()
+
 while not done:
         for event in pygame.event.get():
             if event.type == 2: # keydown
