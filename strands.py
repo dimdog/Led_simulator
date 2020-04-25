@@ -36,11 +36,11 @@ class PatternManager(object):
 
     def display(self):
         # figure out how big the leds should be
-        x_space = self.width / len(self.patterns)
-        y_space = self.height / max([pattern.strand.length for pattern in self.patterns])
-        for x,pattern in enumerate(self.patterns):
-            for y,color in enumerate(pattern.strand.colors):
+        x_space = self.width / max([pattern.strand.length for pattern in self.patterns])
+        y_space = self.height / len(self.patterns)
+        for y,pattern in enumerate(self.patterns):
+            for x,color in enumerate(pattern.strand.colors):
                 #print("Drawing:{} @ ({}, {})".format((color.red, color.green, color.blue), int(x*x_space), int(y*y_space)))
-                pygame.draw.circle(self.screen, (color.red, color.green, color.blue), (int(x*x_space)+50, int(((y*y_space)+y_space/2))), int(y_space/2))
+                pygame.draw.circle(self.screen, (color.red, color.green, color.blue), (int(x*x_space+x_space/2), int(((y*y_space)+50))), int(x_space/2))
 
 

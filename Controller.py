@@ -1,9 +1,7 @@
 import pygame
 import time
-import strands
 import redis
-from patterns import RandomPattern, SimpleRandomPattern
-from ArduinoLed import ArduinoLEDStrip
+from strands import PatternManager
 
 class Controller(object):
 
@@ -13,7 +11,7 @@ class Controller(object):
         screen = pygame.display.set_mode((width, height))
 
         self.led_strips = led_strips or []
-        self.pm = strands.PatternManager(screen, height, width)
+        self.pm = PatternManager(screen, height, width)
         for pattern in patterns:
             self.pm.patterns.append(pattern) # make a goddamn add function
         pygame.display.set_caption("LED SIMULATOR")
@@ -40,31 +38,3 @@ class Controller(object):
                 pygame.display.flip()
 
 
-# make n strands of x length inputtable
-
-s0 = strands.Strand(320)
-s1 = strands.Strand(320)
-s2 = strands.Strand(320)
-s3 = strands.Strand(320)
-s4 = strands.Strand(320)
-rp0 = SimpleRandomPattern(s0)
-rp1 = SimpleRandomPattern(s1)
-rp2 = SimpleRandomPattern(s2)
-rp3 = SimpleRandomPattern(s3)
-rp4 = SimpleRandomPattern(s4)
-#rp0 = RandomPattern(s0)
-
-strip = None
-strip2 = None
-led_strips = []
-try:
-    strip1 = ArduinoLEDStrip('/dev/tty.usbmodem14201', sm.patterns)
-    strip2 = ArduinoLEDStrip('/dev/tty.usbmodem14101', sm.patterns)
-    led_strips = [strip1, strip2]
-except:
-    print("No strips!")
-
-c = Controller([rp0, rp1, rp2, rp3, rp4], led_strips=led_strips)
-
-
-c.loop()
