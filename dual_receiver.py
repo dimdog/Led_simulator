@@ -7,14 +7,8 @@ import struct
 import strands
 import redis
 from patterns import RandomPattern, SimpleRandomPattern
+from ArduinoLed import ArduinoLEDStrip
 
-ser = None
-ser2 = None
-try:
-    ser = serial.Serial('/dev/tty.usbmodem14201', baudrate=1000000)
-    ser2 = serial.Serial('/dev/tty.usbmodem14101', baudrate=1000000)
-except:
-    pass
 
 rand = random.Random()
 pygame.init()
@@ -39,67 +33,15 @@ done = False
 r = redis.StrictRedis(host="localhost", port=6379, password="", decode_responses=True)
 
 
-# Protocol for wire.
-# 1. A number, to specify which strip is being accessed - e.g. `0`
-# 2. A number, specifying which type of data we are sending
-#   I. 0 means individual leds
-#   II. 1 means color wipe
-# 3. Data for the protocal type
-#   Individual LEDS: R G B (Repeated)
-#   Color Wipe R G B
-def individual_leds(serial):
-    for i, pattern in enumerate(sm.patterns):
-        # Protocol # 1
-        serial.write(struct.pack('>B',i))
-        # Protocol # 2
-        serial.write(struct.pack('>B', 0))
-        for color in pattern.strand.colors:
-            if serial:
-                serial.write(struct.pack('>B', min(254, color[0])))
-                serial.write(struct.pack('>B', min(254,color[1])))
-                serial.write(struct.pack('>B', min(254,color[2])))
-                #printed = False
-                #while serial.in_waiting or not printed:
-                #    printed = True
-                #    print(serial.readline())
-        serial.write(struct.pack('>B', 255))
 
-def wipe_all_strips():
-    for i, pattern in enumerate(sm.patterns):
-        for color in pattern.strand.colors[:1]:
-            if ser:
-                color_wipe(ser, i, color)
-            if ser2:
-                color_wipe(ser2, i, color)
+strip = None
+strip2 = None
+try:
+    strip1 = ArduinoLEDStrip('/dev/tty.usbmodem14201', sm.patterns)
+    strip2 = ArduinoLEDStrip('/dev/tty.usbmodem14101', sm.patterns)
+except:
+    print("No strips!")
 
-
-def color_wipe(serial, strip_number, color):
-    # Protocol # 1
-    serial.write(struct.pack('>B', strip_number))
-    # Protocol # 2
-    serial.write(struct.pack('>B', 1))
-    # Protocol # 3
-    #print("Red:{}, Green:{}, Blue:{}".format(color[0], color[1], color[2]))
-    serial.write(struct.pack('>B', color[0]))
-    serial.write(struct.pack('>B', color[1]))
-    serial.write(struct.pack('>B', color[2]))
-    #printed = False
-    #while serial.in_waiting or not printed:
-    #    printed = True
-    #    print(serial.readline())
-
-
-def init_serial(serial):
-    while not serial.in_waiting: # warm up the serial connection
-        data = serial.write(struct.pack('>B', 255))
-        time.sleep(0.01)
-    while serial.in_waiting: # clear the buffer
-        serial.readline()
-
-if ser:
-    init_serial(ser)
-if ser2:
-    init_serial(ser2)
 while not done:
         for event in pygame.event.get():
             if event.type == 2: # keydown
@@ -117,10 +59,10 @@ while not done:
         for pattern in sm.patterns:
             pattern.msg(data)
         sm.display()
-        if ser:
-            individual_leds(ser)
-        if ser2:
-            individual_leds(ser2)
+        if strip:
+            strip.individual_leds()
+        if strip2:
+            strip2.individual_leds()
         #wipe_all_strips()
         pygame.display.flip()
 
