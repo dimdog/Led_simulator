@@ -8,8 +8,13 @@ import strands
 import redis
 from patterns import RandomPattern, SimpleRandomPattern
 
-ser = serial.Serial('/dev/tty.usbmodem14201', baudrate=1000000)
-ser2 = serial.Serial('/dev/tty.usbmodem14101', baudrate=1000000)
+ser = None
+ser2 = None
+try:
+    ser = serial.Serial('/dev/tty.usbmodem14201', baudrate=1000000)
+    ser2 = serial.Serial('/dev/tty.usbmodem14101', baudrate=1000000)
+except:
+    pass
 
 rand = random.Random()
 pygame.init()
@@ -62,8 +67,10 @@ def individual_leds(serial):
 def wipe_all_strips():
     for i, pattern in enumerate(sm.patterns):
         for color in pattern.strand.colors[:1]:
-            color_wipe(ser, i, color)
-            color_wipe(ser2, i, color)
+            if ser:
+                color_wipe(ser, i, color)
+            if ser2:
+                color_wipe(ser2, i, color)
 
 
 def color_wipe(serial, strip_number, color):
@@ -89,27 +96,31 @@ def init_serial(serial):
     while serial.in_waiting: # clear the buffer
         serial.readline()
 
-init_serial(ser)
-init_serial(ser2)
+if ser:
+    init_serial(ser)
+if ser2:
+    init_serial(ser2)
 while not done:
         for event in pygame.event.get():
             if event.type == 2: # keydown
                 print(event)
                 print(event.unicode)
-                try: 
+                try:
                     a = int(event.unicode)
                     rp0.change_color_range(a)
                 except:
                     pass
             if event.type == pygame.QUIT:
                 done = True
-        msg = r.rpop("beat_queue") 
-        data = msg 
+        msg = r.rpop("beat_queue")
+        data = msg
         for pattern in sm.patterns:
             pattern.msg(data)
         sm.display()
-        individual_leds(ser)
-        individual_leds(ser2)
+        if ser:
+            individual_leds(ser)
+        if ser2:
+            individual_leds(ser2)
         #wipe_all_strips()
         pygame.display.flip()
 

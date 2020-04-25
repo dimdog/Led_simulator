@@ -27,7 +27,7 @@ pygame.display.set_caption("LED SIMULATOR")
 
 # make n strands of x length inputtable
 
-s0 = strands.Strand(300)
+s0 = strands.Strand(5000)
 rp0 = SimpleRandomPattern(s0)
 s1 = strands.Strand(160)
 rp1 = RandomPattern(s1)
